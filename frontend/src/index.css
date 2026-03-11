@@ -1,0 +1,202 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Font size scaling via ThemeContext ─────────────────────── */
+html[data-fontsize='small']  { font-size: 13px; }
+html[data-fontsize='medium'] { font-size: 15px; }
+html[data-fontsize='large']  { font-size: 17px; }
+
+/* ── Scrollbar styling ──────────────────────────────────────── */
+::-webkit-scrollbar       { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 99px; }
+.dark ::-webkit-scrollbar-thumb { background: #334155; }
+
+/* ── Base ───────────────────────────────────────────────────── */
+@layer base {
+  body {
+    @apply bg-slate-50 text-slate-800 font-sans antialiased;
+  }
+  .dark body {
+    @apply bg-slate-950 text-slate-100;
+  }
+}
+
+/* ── Reusable components ────────────────────────────────────── */
+@layer components {
+
+  /* Buttons */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2
+           text-sm font-semibold transition-all duration-150 active:scale-[0.97]
+           disabled:opacity-50 disabled:pointer-events-none select-none;
+  }
+  .btn-primary {
+    @apply btn bg-brand-600 text-white hover:bg-brand-700 shadow-sm;
+  }
+  .btn-secondary {
+    @apply btn bg-white text-slate-700 border border-slate-200 hover:bg-slate-50
+           dark:bg-slate-800 dark:text-slate-200 dark:border-slate-700 dark:hover:bg-slate-700;
+  }
+  .btn-danger {
+    @apply btn bg-red-600 text-white hover:bg-red-700 shadow-sm;
+  }
+  .btn-ghost {
+    @apply btn text-slate-600 hover:bg-slate-100
+           dark:text-slate-300 dark:hover:bg-slate-800;
+  }
+  .btn-success {
+    @apply btn bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm;
+  }
+
+  /* Cards */
+  .card {
+    @apply bg-white dark:bg-slate-900 rounded-xl border border-slate-200
+           dark:border-slate-700/60 shadow-card;
+  }
+
+  /* Form inputs */
+  .input {
+    @apply w-full min-w-0 rounded-lg border border-slate-300 dark:border-slate-600
+           bg-white dark:bg-slate-800/60 text-slate-900 dark:text-slate-100
+           px-3 py-2 text-sm placeholder-slate-400 dark:placeholder-slate-500
+           focus:outline-none focus:ring-2 focus:ring-brand-500/50
+           focus:border-brand-500 transition-colors duration-150;
+  }
+  .label {
+    @apply block text-xs font-semibold text-slate-500 dark:text-slate-400
+           uppercase tracking-wide mb-1.5;
+  }
+  .form-group {
+    @apply flex flex-col gap-1;
+  }
+  .input-error {
+    @apply border-red-400 focus:ring-red-500/40 focus:border-red-400;
+  }
+  .error-text {
+    @apply text-xs text-red-500 mt-1;
+  }
+
+  /* Badges */
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold;
+  }
+  .badge-green   { @apply badge bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-400; }
+  .badge-yellow  { @apply badge bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-400; }
+  .badge-red     { @apply badge bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-400; }
+  .badge-blue    { @apply badge bg-brand-100 text-brand-800 dark:bg-brand-900/40 dark:text-brand-400; }
+  .badge-gray    { @apply badge bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300; }
+  .badge-purple  { @apply badge bg-purple-100 text-purple-800 dark:bg-purple-900/40 dark:text-purple-400; }
+
+  /* Status badges mapped to payment/ticket states */
+  .badge-paid       { @apply badge-green; }
+  .badge-pending    { @apply badge-yellow; }
+  .badge-overdue    { @apply badge-red; }
+  .badge-partial    { @apply badge-blue; }
+  .badge-open       { @apply badge-blue; }
+  .badge-resolved   { @apply badge-green; }
+  .badge-in_progress { @apply badge-yellow; }
+  .badge-closed     { @apply badge-gray; }
+
+  /* Tables */
+  .table-wrap {
+    @apply w-full overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-700/60;
+  }
+  .table-base {
+    @apply w-full text-sm;
+  }
+  .th {
+    @apply px-4 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400
+           uppercase tracking-wide bg-slate-50 dark:bg-slate-800/80
+           whitespace-normal md:whitespace-nowrap;
+  }
+  .td {
+    @apply px-4 py-3 text-sm text-slate-700 dark:text-slate-300
+           border-t border-slate-100 dark:border-slate-800
+           whitespace-normal md:whitespace-nowrap;
+  }
+  .tr-hover {
+    @apply hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors duration-100;
+  }
+
+  /* Page layout */
+  .page-wrapper {
+    @apply flex min-h-screen bg-slate-50 dark:bg-slate-950;
+  }
+  .page-content {
+    @apply flex-1 flex flex-col min-w-0;
+  }
+  .page-inner {
+    @apply flex-1 p-4 sm:p-6 lg:p-8 animate-fade-in;
+  }
+  .page-title {
+    @apply text-xl sm:text-2xl font-bold text-slate-900 dark:text-white;
+  }
+  .page-subtitle {
+    @apply text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5;
+  }
+
+  /* Stat cards */
+  .stat-card {
+    @apply card p-5 flex items-start gap-4;
+  }
+  .stat-icon {
+    @apply w-11 h-11 rounded-xl flex items-center justify-center shrink-0;
+  }
+  .stat-value {
+    @apply text-2xl font-bold text-slate-900 dark:text-white leading-none;
+  }
+  .stat-label {
+    @apply text-xs font-medium text-slate-500 dark:text-slate-400 mt-1;
+  }
+
+  /* Sidebar */
+  .sidebar {
+    @apply w-64 bg-white dark:bg-slate-900 border-r border-slate-200
+           dark:border-slate-700/60 flex flex-col h-screen
+           fixed inset-y-0 left-0 z-40
+           transition-transform duration-200 ease-out
+           lg:sticky lg:top-0 lg:translate-x-0;
+  }
+  .nav-item {
+    @apply flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium
+           text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800
+           hover:text-slate-900 dark:hover:text-white transition-all duration-150 cursor-pointer;
+  }
+  .nav-item-active {
+    @apply bg-brand-50 dark:bg-brand-900/20 text-brand-700 dark:text-brand-400
+           hover:bg-brand-50 dark:hover:bg-brand-900/20
+           hover:text-brand-700 dark:hover:text-brand-400;
+  }
+
+  /* Modal */
+  .modal-overlay {
+    @apply fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center
+           justify-center p-4 animate-fade-in;
+  }
+  .modal-box {
+    @apply bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-lg
+           animate-slide-up border border-slate-200 dark:border-slate-700
+           flex flex-col;
+    max-height: 90vh;
+  }
+  .modal-header {
+    @apply flex items-center justify-between p-6 border-b
+           border-slate-200 dark:border-slate-700 shrink-0;
+  }
+  .modal-body   { @apply p-6 overflow-y-auto flex-1; }
+  .modal-footer {
+    @apply flex items-center justify-end gap-3 p-6 border-t
+           border-slate-200 dark:border-slate-700 shrink-0;
+  }
+
+  /* Empty state */
+  .empty-state {
+    @apply flex flex-col items-center justify-center py-16 text-center;
+  }
+  .empty-icon {
+    @apply w-16 h-16 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center
+           justify-center text-slate-400 mb-4;
+  }
+}
