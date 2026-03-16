@@ -150,10 +150,18 @@ export default function LoginPage() {
             </button>
 
             {/* Hint */}
+            <div class="mt-6 p-4 bg-white-50 border border-blue-100 rounded-lg">
+              <p class="text-md text-slate-600 dark:text-slate-800 pt-1">Demo Credentials:</p>
+              <div class="text-xs text-slate-600 dark:text-slate-800 pt-2">
+                <p><strong>Tenant: 1A/B1 = tenant123</strong> </p>
+                <p><strong>Landlord : admin/landlord2 = admin123</strong></p>
+                <p><strong>Manager: manager = manager123</strong></p>
+              </div>
+            </div>
             <p className="text-center text-xs text-slate-400 dark:text-slate-500 pt-1">
               Tenants: use your unit number as username (e.g.{' '}
               <span className="font-mono font-semibold">1A</span>)
-            </p>
+            </p> 
           </form>
         </div>
 
