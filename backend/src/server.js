@@ -36,8 +36,12 @@ app.use(helmet({
   contentSecurityPolicy: false,
   crossOriginEmbedderPolicy: false,
 }));
-app.use(cors({
+/* app.use(cors({
   origin:      process.env.CLIENT_URL || 'http://localhost:5173',
+  credentials: true,
+})); */
+app.use(cors({
+  origin: ['https://rms-frontend-uo3t.onrender.com', 'http://localhost:5173'],
   credentials: true,
 }));
 
