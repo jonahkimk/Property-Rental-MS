@@ -31,17 +31,24 @@ const PORT = process.env.PORT || 5000;
 // ── Security ─────────────────────────────────────────────────
 app.disable('x-powered-by');
 app.use(helmet({
-  // Keep CSP off for now to avoid breaking inline scripts/styles in current UI.
-  // We can roll out CSP later in Report-Only mode first.
   contentSecurityPolicy: false,
   crossOriginEmbedderPolicy: false,
 }));
-/* app.use(cors({
-  origin:      process.env.CLIENT_URL || 'http://localhost:5173',
-  credentials: true,
-})); */
 app.use(cors({
-  origin: ['https://rms-frontend-uo3t.onrender.com', 'https://property-rental-ms.vercel.app/','http://localhost:5173'],
+  origin: (origin, callback) => {
+    // allow non-browser requests with no Origin header
+    if (!origin) return callback(null, true);
+
+    const allowed = new Set([
+      'https://rms-frontend-uo3t.onrender.com',
+      'https://property-rental-ms.vercel.app',
+      'http://localhost:5173',
+    ]);
+
+    // Some deployments can include a trailing slash in Origin.
+    const normalized = origin.replace(/\/+$/, '');
+    return allowed.has(normalized) ? callback(null, true) : callback(null, false);
+  },
   credentials: true,
 }));
 
@@ -55,6 +62,43 @@ app.use('/api', rateLimit({
 // ── Body parsing ──────────────────────────────────────────────
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// ── XSS sanitization ─────────────────────────────────────────
+const xss = require('xss');
+
+app.use((req, res, next) => {
+  const isPlainObject = (v) =>
+    Object.prototype.toString.call(v) === '[object Object]';
+
+  const sanitizeClone = (value) => {
+    if (typeof value === 'string') return xss(value);
+    if (Array.isArray(value)) return value.map(sanitizeClone);
+    if (value && typeof value === 'object') {
+      // Avoid breaking non-plain objects (Date, Buffer, etc).
+      if (!isPlainObject(value)) return value;
+
+      const out = {};
+      Object.keys(value).forEach((key) => {
+        out[key] = sanitizeClone(value[key]);
+      });
+      return out;
+    }
+    return value;
+  };
+
+  // Preserve original request values for debugging/auditing.
+  req._xssOriginal = {
+    body: req.body,
+    query: req.query,
+    params: req.params,
+  };
+
+  // Sanitize by replacing with cloned sanitized objects (no in-place mutation).
+  req.body = sanitizeClone(req.body);
+  req.query = sanitizeClone(req.query);
+  req.params = sanitizeClone(req.params);
+  next();
+});
 
 // ── Logging ───────────────────────────────────────────────────
 if (process.env.NODE_ENV !== 'production') app.use(morgan('dev'));
@@ -102,4 +146,12 @@ app.listen(PORT, () => {
   const { scheduleOverdueJob } = require('./jobs/overdueJob');
   scheduleOverdueJob();
   console.log('📅  Overdue invoice job scheduled (runs daily)');
+
+  const { keepAlive } = require('./jobs/keepAlive');
+  const keepAliveStarted = keepAlive();
+  if (keepAliveStarted) {
+    console.log('♻️  Keep-alive job started');
+  } else if (process.env.NODE_ENV === 'production') {
+    console.warn('♻️  Keep-alive job not started: set RENDER_BACKEND_URL in production.');
+  }
 });
